@@ -1,4 +1,4 @@
-import { MaterialIcons } from "@expo/vector-icons";
+import { MaterialIcons, FontAwesome } from "@expo/vector-icons";
 import * as MediaLibrary from "expo-media-library";
 import { useAtom } from "jotai";
 import React, { useEffect, useMemo, useState } from "react";
@@ -10,45 +10,72 @@ import {
   View,
 } from "react-native";
 import { selectedImageAtom, selectedImageLocationAtom } from "../../atoms/post";
-import { useCreateMedia } from "../../data";
+import { useCreateMedia } from "../../data/oldQL";
 import { StackActions } from "@react-navigation/native";
 import { Row, SmallImage, LightText } from "./styles";
 import { useAuth0 } from "react-native-auth0";
 import { ActivityIndicator, TextInput } from "react-native-paper";
 import * as Location from "expo-location";
+import openCage from "opencage-api-client";
+import { useCreatePostMutation } from "./data/createPost.generated";
+import { useAuthenticator } from "@aws-amplify/ui-react-native";
 
 export default function MakePost({ navigation }) {
   const [image] = useAtom(selectedImageAtom);
-  const [location] = useAtom(selectedImageLocationAtom);
-  const { user } = useAuth0();
+  const [location, setLocation] = useAtom(selectedImageLocationAtom);
+  const { user } = useAuthenticator((context) => [context.user]);
   const { mutateAsync: createMedia, isLoading: isLoadingMedia } =
     useCreateMedia();
   const [asset, setAsset] = useState(null);
   const [caption, setCaption] = useState("");
+  const [errorMsg, setErrorMsg] = useState(null);
 
   useEffect(() => {
     (async function () {
-      console.log(image);
       const asset = await MediaLibrary.getAssetInfoAsync(image);
-      console.log(asset);
       setAsset(asset);
-      //add get location of phone
     })();
   }, [image]);
+
+  useEffect(() => {
+    (async function () {
+      if (!location.place) {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== "granted") {
+          setErrorMsg("Permission to access location was denied");
+          return;
+        }
+        let location = await Location.getCurrentPositionAsync({});
+        const data = await openCage.geocode({
+          q: `${location.coords.latitude},${location.coords.longitude}`,
+          key: "a867628c27a441eb93ad3aff71559fad",
+          language: "en",
+        });
+        const tags = data.results[0];
+        setLocation({
+          location,
+          place: `${tags?.components?.town}, ${tags?.components?.state_code}`,
+        });
+      }
+    })();
+  }, [location]);
 
   useEffect(() => {
     const handleSave = async () => {
       try {
         const asset = await MediaLibrary.getAssetInfoAsync(image);
+        // console.log("asset", asset);
         const source = {
           uri: asset.localUri,
           type: asset.mediaType,
           name: asset.filename,
-          location: asset.location,
+          location: location?.location,
+          place: location?.place,
         };
-        await createMedia({ file: source, tags: "", user });
-        navigation.navigate("Feed");
-        navigation.dispatch(StackActions.popToTop());
+        await createMedia({ file: source, user: { id: 1 } });
+        console.log("media created");
+        // navigation.navigate("Feed");
+        // navigation.dispatch(StackActions.popToTop());
       } catch (error) {
         console.log(error);
       }
@@ -70,34 +97,32 @@ export default function MakePost({ navigation }) {
         </View>
       )}
 
+      <SmallImage
+        source={{ uri: image.uri }}
+        resizeMode="cover"
+        isLoading={isLoadingMedia}
+      />
+      <Row style={{ marginTop: 15 }}>
+        <FontAwesome name="map-marker" size={30} color="#2979FF" />
+        <LightText style={{ color: "#2979FF", fontSize: 18, marginLeft: 10 }}>
+          {location?.place}
+        </LightText>
+      </Row>
+
       <Row>
-        <SmallImage
-          source={{ uri: image.uri }}
-          resizeMode="contain"
-          isLoading={isLoadingMedia}
-        />
         <TextInput
           style={{
             flex: 1,
-            marginLeft: 10,
-            marginRight: 10,
+
             backgroundColor: "black",
           }}
-          activeUnderlineColor="transparent"
+          activeUnderlineColor="lightgrey"
           multiline
           textColor="lightgrey"
           onChangeText={(text) => setCaption(text)}
-          placeholder="Write a caption..."
+          placeholder="Say something about this picture..."
         />
       </Row>
-
-      <LightText>{caption}</LightText>
-
-      <Row style={{ marginTop: 15 }}>
-        <LightText color="white">Add location</LightText>
-        <LightText color="white">{JSON.stringify(location)}</LightText>
-      </Row>
-      <LightText>{JSON.stringify(asset)}</LightText>
     </View>
   );
 }
@@ -106,6 +131,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#000",
+    padding: 5,
   },
   image: {
     width: "100%",

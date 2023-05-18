@@ -1,10 +1,13 @@
 import React from "react";
-import { Auth0Provider } from "react-native-auth0";
+
 import Navigation from "./pages/Navigation/Navigation";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { queryClient } from "./data";
+import { queryClient } from "./data/oldQL";
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import { StatusBar } from "expo-status-bar";
+import { Amplify } from "aws-amplify";
+import { Authenticator, withAuthenticator } from "@aws-amplify/ui-react-native";
+import awsExports from "./src/aws-exports";
 
 const myTheme = {
   ...DefaultTheme,
@@ -18,20 +21,19 @@ const myTheme = {
   },
 };
 
+Amplify.configure(awsExports);
+
 export const App = () => {
   return (
-    <Auth0Provider
-      domain="dev-z23gbvtub72x2sj8.us.auth0.com"
-      clientId="JyOLnYTPcyJfVzmNXVl8bRfq1TvBuv3s"
-    >
+    <Authenticator.Provider>
       <QueryClientProvider client={queryClient}>
         <NavigationContainer theme={myTheme}>
           <StatusBar style="light" />
           <Navigation />
         </NavigationContainer>
       </QueryClientProvider>
-    </Auth0Provider>
+    </Authenticator.Provider>
   );
 };
 
-export default App;
+export default withAuthenticator(App);

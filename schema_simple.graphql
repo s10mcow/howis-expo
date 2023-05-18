@@ -1,0 +1,96 @@
+scalar Date
+
+enum SortOrder {
+  ASC
+  DESC
+}
+
+enum PostOrderBy {
+  CREATED_AT
+}
+
+type Location {
+  latitude: Float!
+  longitude: Float!
+}
+
+input LocationInput {
+  latitude: Float!
+  longitude: Float!
+}
+
+type User {
+  id: Int!
+  sub: String!
+  first_name: String!
+  last_name: String!
+  email: String!
+  phoneNumber: String
+  bio: String
+  posts: [Post!]
+  homeLocation: Location
+  verified: Boolean!
+  createdAt: Date!
+  updatedAt: Date!
+  profileImageURL: String
+}
+
+type Post {
+  id: Int!
+  photoURL: String!
+  caption: String
+  author: User!
+  location: Location!
+  tags: [String!]
+  createdAt: Date!
+  updatedAt: Date!
+}
+
+type Query {
+  getUser(id: ID!): User
+  getPost(id: ID!): Post
+  searchUsers(query: String!): [User!]!
+  searchPosts(query: String!): [Post!]!
+  getPostsNearLocation(
+    first: Int
+    after: String
+    latitude: Float!
+    longitude: Float!
+    distance: Float!
+    orderBy: PostOrderBy
+    order: SortOrder
+  ): [Post!]!
+  hello: String
+}
+
+type Mutation {
+  createPost(
+    photoURL: String!
+    caption: String
+    userId: ID!
+    tags: [String!]
+    location: LocationInput!
+  ): Post
+  updateUserHomeLocation(userId: ID!, homeLocation: LocationInput!): User
+  updatePost(
+    id: ID!
+    photoURL: String
+    caption: String
+    tags: [String!]
+    location: LocationInput
+  ): Post
+  deletePost(id: ID!): Boolean
+  createUser(
+    sub: String!
+    first_name: String!
+    last_name: String!
+    email: String!
+    phoneNumber: String
+    bio: String
+    profileImageURL: String
+  ): User
+  updateUserProfileImage(userId: ID!, profileImageURL: String!): User
+  verifyUser(id: ID!): User
+  updateUserVerifiedStatus(id: ID!, verified: Boolean!): User
+  updateUser(id: ID!, email: String, phoneNumber: String, bio: String): User
+}

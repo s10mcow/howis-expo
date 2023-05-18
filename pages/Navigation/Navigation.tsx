@@ -14,6 +14,7 @@ import Feed from "../Feed/Feed";
 import Home from "../Home/Home";
 import Landing from "../Landing/Landing";
 import Profile from "../Profile/Profile";
+import { GraphQLClient } from "graphql-request/build/esm/index";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -25,6 +26,7 @@ const PostStack = () => {
     <Stack.Navigator initialRouteName="Select">
       <Stack.Screen
         options={{
+          headerTitleAlign: "center",
           headerTitle: () => (
             <MaterialIcons name="photo" size={24} color="white" />
           ),
@@ -44,11 +46,7 @@ const PostStack = () => {
       />
       <Stack.Screen
         options={{
-          headerLeft: () => (
-            <TouchableOpacity onPress={() => navigation.navigate("Select")}>
-              <MaterialIcons name="arrow-back" size={24} color="white" />
-            </TouchableOpacity>
-          ),
+          headerTitleAlign: "center",
           headerTitle: () => (
             <MaterialIcons name="edit" size={24} color="white" />
           ),
@@ -63,12 +61,8 @@ const PostStack = () => {
       />
       <Stack.Screen
         options={{
+          headerTitleAlign: "center",
           headerTitle: "New Post",
-          headerLeft: () => (
-            <TouchableOpacity onPress={() => navigation.navigate("Select")}>
-              <MaterialIcons name="arrow-back" size={24} color="white" />
-            </TouchableOpacity>
-          ),
         }}
         name="MakePost"
         component={MakePost}
@@ -87,8 +81,8 @@ const PostStack = () => {
 
 export const Navigation = () => {
   const { user } = useAuth0();
-
-  return user ? (
+  console.log(user);
+  return (
     <Tab.Navigator
       initialRouteName="Home"
       screenOptions={({ route }) => ({
@@ -128,8 +122,6 @@ export const Navigation = () => {
 
       <Tab.Screen name="Profile" component={Profile} />
     </Tab.Navigator>
-  ) : (
-    <Landing />
   );
 };
 

@@ -1,0 +1,18 @@
+import type { CodegenConfig } from "@graphql-codegen/cli";
+
+const config: CodegenConfig = {
+  schema: "./schema_simple.graphql",
+  documents: "**/*.graphql",
+  generates: {
+    "types/types.generated.d.ts": { plugins: ["typescript"] },
+    ".": {
+      preset: "near-operation-file",
+      presetConfig: {
+        extension: ".generated.ts",
+        baseTypesPath: "./types/types.generated.d.ts",
+      },
+      plugins: ["typescript-operations", "typescript-react-query"],
+    },
+  },
+};
+export default config;

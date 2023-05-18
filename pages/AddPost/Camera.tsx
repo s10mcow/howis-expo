@@ -17,6 +17,7 @@ import { LightText } from "./styles";
 import { useWindowDimensions } from "react-native";
 import Constants from "expo-constants";
 import * as Location from "expo-location";
+import openCage from "opencage-api-client";
 
 export default function InstaCamera() {
   const navigator = useNavigation();
@@ -46,8 +47,17 @@ export default function InstaCamera() {
       }
 
       let location = await Location.getCurrentPositionAsync({});
-      setLocation(location);
       console.log(location);
+      const data = await openCage.geocode({
+        q: `${location.coords.latitude},${location.coords.longitude}`,
+        key: "a867628c27a441eb93ad3aff71559fad",
+        language: "en",
+      });
+      const tags = data.results[0];
+      setLocation({
+        location,
+        place: `${tags?.components?.town}, ${tags?.components?.state_code}`,
+      });
     })();
   }, []);
 

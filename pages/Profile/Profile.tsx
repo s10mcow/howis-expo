@@ -1,9 +1,12 @@
 import React from "react";
 import { StyleSheet, View, Text, TouchableOpacity, Image } from "react-native";
-import { useAuth0 } from "react-native-auth0";
+
+import { useAuthenticator } from "@aws-amplify/ui-react-native";
 
 export default function Profile() {
-  const { user, clearSession } = useAuth0();
+  const { user: awsUser } = useAuthenticator((context) => [context.user]);
+
+  const user = awsUser.attributes;
   const handleResetPassword = () => {
     console.log("Reset password...");
     // Add reset password logic here
@@ -18,7 +21,7 @@ export default function Profile() {
       <View style={styles.imageContainer}>
         <Image style={styles.image} source={{ uri: user?.picture }} />
       </View>
-      <Text style={styles.name}>{user?.name}</Text>
+      <Text style={styles.name}>{user?.given_name}</Text>
       <Text style={styles.email}>{user?.email}</Text>
       {/* <TouchableOpacity style={styles.button} onPress={handleResetPassword}>
         <Text style={styles.buttonText}>Reset Password</Text>

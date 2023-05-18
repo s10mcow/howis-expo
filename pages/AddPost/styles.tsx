@@ -18,8 +18,9 @@ export const Image = styled(RNImage)`
     `}
 `;
 export const SmallImage = styled(RNImage)`
-  height: 100px;
-  width: 100px;
+  width: ${Dimensions.get("screen").width}px;
+  height: ${Dimensions.get("screen").width}px;
+
   margin-top: 0px;
   ${(p) =>
     p.isLoading &&

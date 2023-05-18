@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import MediaCard from "../../components/MediaCard";
 
-import { useAllMedia } from "../../data";
+import { useAllMedia } from "../../data/oldQL";
 import { LightText } from "../AddPost/styles";
 
 const styles = StyleSheet.create({

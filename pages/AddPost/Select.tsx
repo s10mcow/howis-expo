@@ -16,6 +16,13 @@ export default function Select() {
   const [images, setImages] = useState([]);
   const [selectedImage, setSelectedImage] = useAtom(selectedImageAtom);
   const navigator = useNavigation();
+  const [permissionResponse, requestPermission] = MediaLibrary.usePermissions();
+
+  useEffect(() => {
+    if (permissionResponse?.granted === false) {
+      requestPermission();
+    }
+  }, [permissionResponse]);
 
   useEffect(() => {
     (async () => {

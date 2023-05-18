@@ -5,7 +5,7 @@ import { Dimensions, StyleSheet, View } from "react-native";
 import { selectedImageAtom } from "../../atoms/post";
 import { ExpandIconButton, Image } from "./styles";
 
-export default function Edit({ navigation }) {
+export default function Edit() {
   const [resizeMode, setResizeMode] = useState("contain");
   const [image] = useAtom(selectedImageAtom);
 

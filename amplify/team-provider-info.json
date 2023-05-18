@@ -1,0 +1,25 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-howisthesurf-dev-84610-authRole",
+      "UnauthRoleArn": "arn:aws:iam::890372599078:role/amplify-howisthesurf-dev-84610-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::890372599078:role/amplify-howisthesurf-dev-84610-authRole",
+      "Region": "us-east-2",
+      "DeploymentBucketName": "amplify-howisthesurf-dev-84610-deployment",
+      "UnauthRoleName": "amplify-howisthesurf-dev-84610-unauthRole",
+      "StackName": "amplify-howisthesurf-dev-84610",
+      "StackId": "arn:aws:cloudformation:us-east-2:890372599078:stack/amplify-howisthesurf-dev-84610/cdb2c520-f4b0-11ed-8471-0253ef3b2679",
+      "AmplifyAppId": "d248bibp72ty3b"
+    },
+    "categories": {
+      "auth": {
+        "howisthesurf465101b0": {
+          "userPoolId": "us-east-2_JKkzqPjLL",
+          "userPoolName": "howisthesurf-dev",
+          "webClientId": "3o4o3k46pdrvo8e9o46rl2ve19",
+          "nativeClientId": "3o4o3k46pdrvo8e9o46rl2ve19"
+        }
+      }
+    }
+  }
+}
