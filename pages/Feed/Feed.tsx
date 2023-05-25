@@ -7,10 +7,11 @@ import {
   Text,
   View,
 } from "react-native";
-import MediaCard from "../../components/MediaCard";
+import MediaCard from "../../components/MediaCard/MediaCard";
 
-import { useAllMedia } from "../../data/oldQL";
 import { LightText } from "../AddPost/styles";
+import { GET_ALL_POSTS } from "./data/getAllPosts";
+import { useQuery, gql } from "@apollo/client";
 
 const styles = StyleSheet.create({
   feedbackContainer: {
@@ -29,32 +30,22 @@ const styles = StyleSheet.create({
 });
 
 const Feed = () => {
-  const { data: media, isLoading: isFetchingMedia } = useAllMedia();
-  console.log(media);
+  // const { data: media, isLoading: isFetchingMedia } = useAllMedia();
+  // const { data: media, isLoading: isFetchingMedia } = useGetAllPostsQuery();
+  const { data, loading: isFetchingMedia, error } = useQuery(GET_ALL_POSTS);
+
+  console.log("error!", error);
+  console.log("isFetchingMedia", isFetchingMedia);
+  console.log("media", data);
   return (
     <SafeAreaView style={styles.feedbackContainer}>
       {isFetchingMedia ? (
         <ActivityIndicator />
       ) : (
         <ScrollView contentContainerStyle={styles.mediaList}>
-          {media
-            ?.reverse()
-            ?.filter(({ data }) => data.resource_type)
-            ?.map(({ data }) =>
-              data.resource_type === "image" ? (
-                <MediaCard key={data.public_id} data={data} />
-              ) : (
-                <Text key={data.public_id}>I'm a video</Text>
-              )
-            )}
-
-          {media?.length === 0 && (
-            <>
-              <View>
-                <LightText>Nothing to see here...</LightText>
-              </View>
-            </>
-          )}
+          {data?.getAllPosts?.reverse()?.map((data) => (
+            <MediaCard key={data.id} data={data} />
+          ))}
         </ScrollView>
       )}
     </SafeAreaView>

@@ -1,11 +1,21 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { StyleSheet, View, Text, TouchableOpacity, Image } from "react-native";
+import { Auth } from "aws-amplify";
 
 import { useAuthenticator } from "@aws-amplify/ui-react-native";
 
 export default function Profile() {
-  const { user: awsUser } = useAuthenticator((context) => [context.user]);
-
+  const { user: awsUser, signOut } = useAuthenticator((context) => [
+    context.user,
+  ]);
+  useEffect(() => {
+    (async function () {
+      const user = await Auth.currentAuthenticatedUser();
+      const token =
+        user.getSignInUserSession()?.getAccessToken().getJwtToken() ?? "";
+      console.log("token", token);
+    })();
+  }, []);
   const user = awsUser.attributes;
   const handleResetPassword = () => {
     console.log("Reset password...");
@@ -13,7 +23,7 @@ export default function Profile() {
   };
 
   const handleLogout = async () => {
-    await clearSession({ customScheme: "auth0.com.howisthesurf" });
+    await signOut();
   };
 
   return (
@@ -23,9 +33,9 @@ export default function Profile() {
       </View>
       <Text style={styles.name}>{user?.given_name}</Text>
       <Text style={styles.email}>{user?.email}</Text>
-      {/* <TouchableOpacity style={styles.button} onPress={handleResetPassword}>
+      <TouchableOpacity style={styles.button} onPress={handleResetPassword}>
         <Text style={styles.buttonText}>Reset Password</Text>
-      </TouchableOpacity> */}
+      </TouchableOpacity>
       <TouchableOpacity style={styles.button} onPress={handleLogout}>
         <Text style={styles.buttonText}>Logout</Text>
       </TouchableOpacity>

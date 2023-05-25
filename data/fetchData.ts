@@ -3,7 +3,7 @@ import { client } from "./gqlClient";
 import { CognitoUser } from "amazon-cognito-identity-js";
 import { Auth } from "aws-amplify";
 import { secondsToMilliseconds } from "date-fns";
-import { Variables } from "graphql-request/build/esm/index";
+import { Variables, GraphQLClient } from "graphql-request/build/esm/index";
 
 import { QueryFunctionContext } from "react-query";
 
@@ -36,6 +36,12 @@ export const fetchData = <TData, TVariables extends Variables>(
   headers?: RequestInit["headers"]
 ): ((context?: QueryFunctionContext) => Promise<TData>) => {
   return async (context) => {
+    console.log("fetch", fetch);
+
+    const client = new GraphQLClient(
+      "https://6vx564r013.execute-api.us-east-2.amazonaws.com",
+      { fetch }
+    );
     console.log("context", context);
     const requestId = 1;
     console.log(`servicing/fetcher:fetchData - start`, {

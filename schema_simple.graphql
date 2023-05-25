@@ -49,6 +49,7 @@ type Post {
 type Query {
   getUser(id: ID!): User
   getPost(id: ID!): Post
+  getAllPosts: [Post!]!
   searchUsers(query: String!): [User!]!
   searchPosts(query: String!): [Post!]!
   getPostsNearLocation(

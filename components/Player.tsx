@@ -158,36 +158,6 @@ const Player: React.FC<PlayerProps> = ({ url, name, index, beachNames }) => {
           />
         </View>
         <View style={{ padding: 10, marginTop: 20 }}>
-          {/* <Picker
-            selectedValue={JSON.stringify({ url, name })}
-            onValueChange={(itemValue) =>
-              changeCamera(index, itemValue as string)
-            }
-          >
-            {beachNames.map((beach, key) => (
-              <Picker.Item
-                color="white"
-                key={key}
-                value={JSON.stringify({ url: beach.url, name: beach.name })}
-                label={beach.name}
-              />
-            ))}
-            <Picker.Item
-              key="suggest_new_camera"
-              value="suggest_new_camera"
-              label="* Suggest New Camera *"
-            />
-          </Picker> */}
-          {/* <ModalSelector
-            data={beachNames}
-            keyExtractor={(item) => item.url}
-            labelExtractor={(item) => item.name}
-            initialValue={beachNames[0]?.name}
-            onChange={(item) =>
-              changeCamera(index, JSON.stringify(item) as string)
-            }
-            initValueTextStyle={{ color: "white" }}
-          /> */}
           <PickerModal
             items={beachNames.map((beach) => ({
               Id: beach.url,

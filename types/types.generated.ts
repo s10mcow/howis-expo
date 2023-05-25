@@ -120,6 +120,7 @@ export enum PostOrderBy {
 
 export type Query = {
   __typename?: 'Query';
+  getAllPosts: Array<Post>;
   getPost?: Maybe<Post>;
   getPostsNearLocation: Array<Post>;
   getUser?: Maybe<User>;
