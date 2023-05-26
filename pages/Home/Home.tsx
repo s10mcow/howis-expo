@@ -18,17 +18,44 @@ import { camerasAtom } from "../../atoms/cameras";
 import Player from "../../components/Player";
 import { Container, Players } from "./HomeStyles";
 import { showModalAtom } from "../../atoms/user";
+import { selectedImageAtom, selectedImageLocationAtom } from "../../atoms/post";
 
+import * as Location from "expo-location";
+import openCage from "opencage-api-client";
 function Home() {
   const [cameras, setCameras] = useAtom(camerasAtom);
-  const [currentLocation, setLocation] =
-    useAtom<beachTypes>(currentLocationAtom);
+  const [currentLocation] = useAtom<beachTypes>(currentLocationAtom);
+
   const [beaches] = useAtom(getCurrentBeachesAtom);
+  const [errorMsg, setErrorMsg] = useState(null);
+  const [location, setLocation] = useAtom(selectedImageLocationAtom);
 
   const showFeedInPlayer = (name) => {
     // Implement navigation to feedback
   };
-
+  useEffect(() => {
+    (async function () {
+      if (!location.place) {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== "granted") {
+          setErrorMsg("Permission to access location was denied");
+          return;
+        }
+        let location = await Location.getCurrentPositionAsync({});
+        const data = await openCage.geocode({
+          q: `${location.coords.latitude},${location.coords.longitude}`,
+          key: "a867628c27a441eb93ad3aff71559fad",
+          language: "en",
+        });
+        console.log("data", data);
+        const tags = data.results[0];
+        setLocation({
+          location,
+          place: `${tags?.components?.town}, ${tags?.components?.state_code}`,
+        });
+      }
+    })();
+  }, [location]);
   const renderItem = ({ item, index }) => (
     <Player
       key={index}

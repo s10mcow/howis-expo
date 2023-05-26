@@ -39,13 +39,6 @@
         }
       ],
       [
-        "react-native-auth0",
-        {
-          "domain": "dev-z23gbvtub72x2sj8.us.auth0.com",
-          "customScheme": "auth0.com.howisthesurf"
-        }
-      ],
-      [
         "expo-av",
         {
           "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone."

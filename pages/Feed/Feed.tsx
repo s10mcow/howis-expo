@@ -43,7 +43,7 @@ const Feed = () => {
         <ActivityIndicator />
       ) : (
         <ScrollView contentContainerStyle={styles.mediaList}>
-          {data?.getAllPosts?.reverse()?.map((data) => (
+          {data?.getAllPosts?.map((data) => (
             <MediaCard key={data.id} data={data} />
           ))}
         </ScrollView>

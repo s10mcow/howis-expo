@@ -7,19 +7,17 @@ import {
   Image,
   Dimensions,
 } from "react-native";
-import { useAuth0 } from "react-native-auth0";
 
 const { height } = Dimensions.get("window");
 
 export default function Landing() {
-  const { authorize, clearSession, user, error } = useAuth0();
   const login = async () => {
     try {
-      await authorize(
-        { scope: "openid profile email" },
-        { customScheme: "auth0.com.howisthesurf" }
-      );
-      console.log(user);
+      // await authorize(
+      //   { scope: "openid profile email" },
+      //   { customScheme: "auth0.com.howisthesurf" }
+      // );
+      // console.log(user);
     } catch (e) {
       console.log(e);
     }

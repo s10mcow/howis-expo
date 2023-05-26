@@ -5,7 +5,6 @@ import { useNavigation } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import React from "react";
 import { TouchableOpacity } from "react-native";
-import { useAuth0 } from "react-native-auth0";
 import Camera from "../AddPost/Camera";
 import Edit from "../AddPost/Edit";
 import Select from "../AddPost/Select";
@@ -14,7 +13,6 @@ import Feed from "../Feed/Feed";
 import Home from "../Home/Home";
 import Landing from "../Landing/Landing";
 import Profile from "../Profile/Profile";
-import { GraphQLClient } from "graphql-request/build/esm/index";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -80,8 +78,6 @@ const PostStack = () => {
 };
 
 export const Navigation = () => {
-  const { user } = useAuth0();
-  console.log(user);
   return (
     <Tab.Navigator
       initialRouteName="Home"

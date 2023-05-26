@@ -13,22 +13,25 @@ import { selectedImageAtom, selectedImageLocationAtom } from "../../atoms/post";
 import { useCreateMedia } from "../../data/oldQL";
 import { StackActions } from "@react-navigation/native";
 import { Row, SmallImage, LightText } from "./styles";
-import { useAuth0 } from "react-native-auth0";
 import { ActivityIndicator, TextInput } from "react-native-paper";
-import * as Location from "expo-location";
-import openCage from "opencage-api-client";
-import { useCreatePostMutation } from "./data/createPost.generated";
+
 import { useAuthenticator } from "@aws-amplify/ui-react-native";
+import { useMutation } from "@apollo/client";
+import { CREATE_POST } from "./data/CREATE_POST";
+import { GET_ALL_POSTS } from "../Feed/data/getAllPosts";
+import { uploadToCloudinary } from "./data/uploadToCloudinary";
 
 export default function MakePost({ navigation }) {
+  const [creatingPost, setCreatingPost] = useState(false);
   const [image] = useAtom(selectedImageAtom);
   const [location, setLocation] = useAtom(selectedImageLocationAtom);
   const { user } = useAuthenticator((context) => [context.user]);
-  const { mutateAsync: createMedia, isLoading: isLoadingMedia } =
-    useCreateMedia();
+  const [createPost, { loading: isLoadingMedia }] = useMutation(CREATE_POST, {
+    refetchQueries: [{ query: GET_ALL_POSTS }],
+  });
+
   const [asset, setAsset] = useState(null);
   const [caption, setCaption] = useState("");
-  const [errorMsg, setErrorMsg] = useState(null);
 
   useEffect(() => {
     (async function () {
@@ -36,67 +39,48 @@ export default function MakePost({ navigation }) {
       setAsset(asset);
     })();
   }, [image]);
+  const handleSave = async () => {
+    try {
+      setCreatingPost(true);
+      const asset = await MediaLibrary.getAssetInfoAsync(image);
+      const cloudinaryData = await uploadToCloudinary({
+        asset,
+      });
+      console.log("createPost");
+
+      await createPost({
+        variables: {
+          photoURL: cloudinaryData.url,
+          userId: 1,
+          location: {
+            latitude: location?.coords?.latitude || 0,
+            longitude: location?.coords?.longitude || 0,
+          },
+        },
+      });
+      navigation.navigate("Feed");
+      setCreatingPost(false);
+      navigation.dispatch(StackActions.popToTop());
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
-    (async function () {
-      if (!location.place) {
-        let { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== "granted") {
-          setErrorMsg("Permission to access location was denied");
-          return;
-        }
-        let location = await Location.getCurrentPositionAsync({});
-        const data = await openCage.geocode({
-          q: `${location.coords.latitude},${location.coords.longitude}`,
-          key: "a867628c27a441eb93ad3aff71559fad",
-          language: "en",
-        });
-        const tags = data.results[0];
-        setLocation({
-          location,
-          place: `${tags?.components?.town}, ${tags?.components?.state_code}`,
-        });
-      }
-    })();
-  }, [location]);
-
-  useEffect(() => {
-    const handleSave = async () => {
-      try {
-        const asset = await MediaLibrary.getAssetInfoAsync(image);
-        // console.log("asset", asset);
-        const source = {
-          uri: asset.localUri,
-          type: asset.mediaType,
-          name: asset.filename,
-          location: location?.location,
-          place: location?.place,
-        };
-        await createMedia({ file: source, user: { id: 1 } });
-        console.log("media created");
-        // navigation.navigate("Feed");
-        // navigation.dispatch(StackActions.popToTop());
-      } catch (error) {
-        console.log(error);
-      }
-    };
     navigation.setOptions({
-      headerRight: () => (
-        <TouchableOpacity onPress={handleSave}>
-          <MaterialIcons name="check" size={24} color="#2979FF" />
-        </TouchableOpacity>
-      ),
+      headerRight: () =>
+        creatingPost ? (
+          <ActivityIndicator color="lightblue" />
+        ) : (
+          <TouchableOpacity onPress={handleSave}>
+            <MaterialIcons name="check" size={24} color="#2979FF" />
+          </TouchableOpacity>
+        ),
     });
-  }, [navigation]);
+  }, [navigation, creatingPost]);
 
   return (
     <View style={styles.container}>
-      {isLoadingMedia && (
-        <View style={styles.loading}>
-          <ActivityIndicator size="large" color="lightblue" />
-        </View>
-      )}
-
       <SmallImage
         source={{ uri: image.uri }}
         resizeMode="cover"

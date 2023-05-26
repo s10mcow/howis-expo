@@ -115,9 +115,6 @@ android {
 
     namespace 'com.howisthesurf'
     defaultConfig {
-// @generated begin react-native-auth0-manifest-placeholder - expo prebuild (DO NOT MODIFY) sync-efaf02a717ed8172ebec24b50e5224d6cf21f491
-manifestPlaceholders = [auth0Domain: "dev-z23gbvtub72x2sj8.us.auth0.com", auth0Scheme: "auth0.com.howisthesurf"]
-// @generated end react-native-auth0-manifest-placeholder
         applicationId 'com.howisthesurf'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion

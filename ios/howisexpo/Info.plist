@@ -28,14 +28,6 @@
           <string>com.howisthesurf</string>
         </array>
       </dict>
-      <dict>
-        <key>CFBundleURLName</key>
-        <string>auth0</string>
-        <key>CFBundleURLSchemes</key>
-        <array>
-          <string>auth0.com.howisthesurf</string>
-        </array>
-      </dict>
     </array>
     <key>CFBundleVersion</key>
     <string>1</string>
